@@ -1,3 +1,8 @@
+'use strict';
+
+var INITIAL_POS_X = 200,
+    INITIAL_POS_Y = 400;
+
 // Enemies our player must avoid
 var Enemy = function(x, y, speed) {
     // Variables applied to each of our instances go here,
@@ -35,13 +40,21 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
     this.sprite = 'images/char-boy.png';
-    this.x = 200;
-    this.y = 400;
+    this.x = INITIAL_POS_X;
+    this.y = INITIAL_POS_Y;
     this.speed = 90;
 };
 
 Player.prototype.update = function() {
+    if (this.y == -50) {
+        alert('YOU WINS!!!');
+        this.startOver();
+    }
+};
 
+Player.prototype.startOver = function() {
+    this.x = INITIAL_POS_X;
+    this.y = INITIAL_POS_Y;
 };
 
 // Draw the player on the screen
@@ -51,24 +64,28 @@ Player.prototype.render = function() {
 
 // handle the user input moving the player on the screen
 Player.prototype.handleInput = function(key) {
+    var initialX = 0, finalX = 400, initialY = -100, finalY = 450;
+
     switch (key) {
         case 'left':
-            if ((this.x - this.speed) > 0)
+            if ((this.x - this.speed) > initialX)
                 this.x -= this.speed;
             break;    
         case 'up':
-            if ((this.y - this.speed) > -100)
+            if ((this.y - this.speed) > initialY)
                 this.y -= this.speed;
             break;    
         case 'right':
-            if ((this.x + this.speed) < 400)
+            if ((this.x + this.speed) < finalX)
                 this.x += this.speed;
             break;    
         case 'down':
-            if ((this.y + this.speed) < 450)
+            if ((this.y + this.speed) < finalY)
                 this.y += this.speed;
             break;    
     }
+
+    this.update();
 };
 
 
@@ -90,23 +107,16 @@ document.addEventListener('keyup', function(e) {
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
-    checkVictory();
 });
 
-var checkVictory = function() {
-    if (player.y == -50) {
-        alert('YOU WINS!!!');
-        player = new Player();
-    }
-};
-
 var checkCollisions = function () {    
-    for (var index = 0; index < allEnemies.length; index++) {
-        var enemie = allEnemies[index];        
+    var count = allEnemies.length;
+    for (var index = 0; index < count; index++) {
+        var enemy = allEnemies[index];        
 
-        // verify the enemie's position + image size to confirm if there's a collision.
-        var collisonX = enemie.x + 70 >= player.x && enemie.x <= player.x + 70;
-        var collisonY = enemie.y >= player.y && enemie.y <= player.y + 85;
+        // verify the enemy's position + image size to confirm if there's a collision.
+        var collisonX = enemy.x + 70 >= player.x && enemy.x <= player.x + 70;
+        var collisonY = enemy.y >= player.y && enemy.y <= player.y + 85;
 
         if (collisonX && collisonY) {
             alert('YOU LOSE!!!');
